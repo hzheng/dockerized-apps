@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+   mysql:
+     image: mysql:5.7
+     volumes:
+       - /usr/local/storage/redmine/mysql:/var/lib/mysql
+     environment:
+       MYSQL_DATABASE: redmine
+       MYSQL_USER: redmine
+       MYSQL_PASSWORD: rootPass
+       MYSQL_ROOT_PASSWORD: rootPass
+     restart: always
+   redmine:
+     build:
+       context: .
+     image: redmine:custom
+     depends_on:
+     - mysql
+     restart: always
+     ports:
+       - 3000:3000
+     environment:
+       DB_ADAPTER: mysql2
+       REDMINE_DB_MYSQL: mysql
+       REDMINE_DB_PASSWORD: rootPass
+
+     volumes:
+       - /usr/local/storage/redmine/plugins:/usr/src/redmine/plugins
+       - /usr/local/storage/redmine/public/themes:/usr/src/redmine/public/themes
+       - /usr/local/storage/redmine/files:/usr/src/redmine/files
+       - /usr/local/storage/redmine/repos:/var/lib/redmine/repos
