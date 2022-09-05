@@ -1,0 +1,17 @@
+version: "3.8"
+ 
+services: 
+  syslogd: 
+    build:
+      context: .
+    image: rsyslog:custom
+    container_name: rsyslog 
+    hostname: rsyslog 
+    restart: always
+    volumes: 
+      - "/var/log:/var/log" 
+    ports: 
+      - 514:514
+      - 514:514/udp
+    cap_add:
+      - SYSLOG
