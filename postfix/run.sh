@@ -55,6 +55,8 @@ if [ ! -f $pass_file -a ! -z "${SMTP_USERNAME}" ]; then
 fi
 
 echo "starting service..."
+rsyslogd
+
 # If host mounting /var/spool/postfix, we need to delete old pid file before
 # starting services
 rm -f /var/spool/postfix/pid/master.pid

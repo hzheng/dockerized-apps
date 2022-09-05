@@ -3,8 +3,9 @@ services:
   postfix:
     build:
       context: .
-    image: postfix-custom
+    image: postfix:custom
     container_name: postfix
+    hostname: postfix
     restart: always
     environment:
       - SMTP_USERNAME=$SMTP_USERNAME
@@ -13,3 +14,5 @@ services:
       - env
     ports:
        - "25:25"
+    cap_add:
+      - SYSLOG
