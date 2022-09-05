@@ -3,6 +3,7 @@ services:
    mysql:
      image: mysql:5.7
      container_name: redmine_mysql
+     hostname: redmine_mysql
      volumes:
        - /usr/local/storage/redmine/mysql:/var/lib/mysql
      environment:
@@ -16,8 +17,9 @@ services:
        context: .
      image: redmine:custom
      container_name: redmine
+     hostname: redmine
      depends_on:
-     - mysql
+       - mysql
      restart: always
      ports:
        - 3000:3000
