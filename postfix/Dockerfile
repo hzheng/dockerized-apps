@@ -7,6 +7,5 @@ COPY run.sh /
 RUN chmod +x /run.sh
 RUN newaliases
 
-EXPOSE 25
 #ENTRYPOINT ["/run.sh"]
 CMD ["/run.sh"]
