@@ -1,0 +1,98 @@
+#!/bin/bash
+
+debug_enabled=${DEBUG-0}
+
+function debug {
+  if [[ $debug_enabled == "1" ]]; then
+    echo >&2 $1
+  fi
+}
+
+function info {
+  echo >&2 $1
+}
+
+function error {
+  echo >&2 $1
+  exit 1
+}
+
+subject_pattern="^(refs|fixes) \#[0-9]+\: [^ ]+"
+commit_subject=$(head -n 1 $1)
+if [[ ! "$commit_subject" =~ $subject_pattern ]]; then
+  error "Commit subject(i.e. first line) should be in the form of \"[refs|fixes] #ID: message\""
+fi
+debug "Commit message: OK"
+
+function redmine_response {
+  curl --silent -k -H "Content-Type: application/json" -X GET -H "X-Redmine-API-Key: $redmine_apikey" "$redmine_host/$1"
+}
+
+function get_value {
+  python -c "import sys;import json;r=json.loads(sys.stdin.read());print str(r$1);"
+}
+
+redmine_host=$(git config redmine.host)
+redmine_apikey=$(git config redmine.apikey)
+
+issue_id=$(sed -E 's/(refs|fixes) #([0-9]+).*/\2/' <<<"$commit_subject")
+debug "issue_id is $issue_id"
+issue=$(redmine_response "issues/$issue_id\.json")
+if [[ "$issue" == "" ]]; then
+  error "Issue $issue_id is not found"
+fi
+debug "issue is <$issue>"
+
+project=$(get_value "['issue']['project']['name']" <<<"$issue")
+if [[ "$project" == "" ]]; then
+  error "Project is not found"
+fi
+debug "Project is $project"
+
+cur_dir=$(basename "$PWD")
+debug "current directory is $cur_dir"
+if [[ "$cur_dir" != "$project" ]]; then
+  error "Project name \"$project\" doesn't match current directory($cur_dir)"
+fi
+
+user=$(redmine_response "users/current.json")
+if [[ "$user" == "" ]]; then
+  error "user is not found, please check if redmine.apikey is set correctly in git config"
+fi
+
+debug "user is $user"
+user_id=$(get_value "['user']['id']" <<<"$user")
+debug "user_id is $user_id"
+user_firstname=$(get_value "['user']['firstname']" <<<"$user")
+user_lastname=$(get_value "['user']['lastname']" <<<"$user")
+user_name="$user_firstname $user_lastname"
+debug "user is $user_name"
+
+assignee_id=$(get_value "['issue']['assigned_to']['id']" <<<"$issue")
+if [[ $assignee_id == "" ]]; then
+  error "assignee is not found"
+fi
+debug "assignee_id is $assignee_id"
+
+assignee_name=$(echo $issue | get_value "['issue']['assigned_to']['name']")
+debug "assignee is $assignee_name"
+
+if [[ $user_id != $assignee_id ]]; then
+  error "You are working as $user_name($user_id) but issue is assigned to $assignee_name($assignee_id)"
+fi
+debug "Assignee: OK"
+
+info ""
+info "=========================== Commit Summary ==========================="
+info "  Issue link:    $redmine_host/issues/$issue_id"
+info "  Issue #:       $(echo $issue | get_value "['issue']['id']")"
+info "  Issue Subject: $(echo $issue | get_value "['issue']['subject']")"
+info "  Project:       $project"
+info "  Priority:      $(echo $issue | get_value "['issue']['priority']['name']")"
+info "  Created by:    $(echo $issue | get_value "['issue']['author']['name']")"
+info "  Assigned to:   $assignee_name"
+info ""
+
+if [[ ${DRY_RUN-0} == "1" ]]; then
+  error "dry run(NOT committed)"
+fi
