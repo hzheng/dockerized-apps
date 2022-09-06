@@ -17,8 +17,7 @@ cd $dir
 read_val() {
     while true
     do
-        #echo $1 and $2 >&2
-        eval "read $2 -p \"input $1: \" val"
+        eval "\nread $2 -p \"input $1: \" val"
         if [ -z "$val" ]; then
             echo "$1 cannot be empty" >&2
         else

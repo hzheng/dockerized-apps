@@ -1,0 +1,13 @@
+production:
+  email_delivery:
+    #delivery_method: :sendmail
+    delivery_method: :smtp
+    smtp_settings:
+      address: "$SMTP_ADDRESS"
+      port: 25
+      domain: :none
+      authentication: :none
+      #tls: true
+      enable_starttls_auto: true
+      openssl_verify_mode: 'none'
+      #ca_file: "/etc/ssl/certs/ca-certificates.crt"

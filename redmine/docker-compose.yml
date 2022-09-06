@@ -9,8 +9,8 @@ services:
      environment:
        MYSQL_DATABASE: redmine
        MYSQL_USER: redmine
-       MYSQL_PASSWORD: rootPass
-       MYSQL_ROOT_PASSWORD: rootPass
+       MYSQL_PASSWORD: $DB_PASSWORD
+       MYSQL_ROOT_PASSWORD: $DB_PASSWORD
      restart: always
    redmine:
      build:
@@ -26,7 +26,8 @@ services:
      environment:
        DB_ADAPTER: mysql2
        REDMINE_DB_MYSQL: mysql
-       REDMINE_DB_PASSWORD: rootPass
+       REDMINE_DB_PASSWORD: $DB_PASSWORD
+       SMTP_ADDRESS: $SMTP_ADDRESS
 
      volumes:
        - /usr/local/storage/redmine/plugins:/usr/src/redmine/plugins
