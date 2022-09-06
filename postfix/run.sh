@@ -42,6 +42,10 @@ fi
 # Bind to both IPv4 and IPv4
 add_config_value "inet_protocols" "all"
 
+# Add gateway IP
+echo adding mynetworks ${SUBNET_PREFIX}.1 
+add_config_value "mynetworks" "${SUBNET_PREFIX}.1 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128"
+
 echo "setting password for $SMTP_USERNAME ..."
 pass_file=/etc/postfix/sasl_passwd
 if [ ! -f $pass_file -a ! -z "${SMTP_USERNAME}" ]; then

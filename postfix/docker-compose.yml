@@ -1,8 +1,11 @@
-version: '3.8'
+version: '3.9'
+
 services:
   postfix:
     build:
       context: .
+    networks:
+      - network
     image: postfix:custom
     container_name: postfix
     hostname: postfix
@@ -11,8 +14,18 @@ services:
       - SMTP_USERNAME=$SMTP_USERNAME
       - SMTP_PASSWORD=$SMTP_PASSWORD
     env_file:
-      - env
+      - .env
     ports:
        - "25:25"
     cap_add:
       - SYSLOG
+
+networks:
+  network:
+    name: postfix_bridge
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${SUBNET_PREFIX}.0/24
+          gateway: ${SUBNET_PREFIX}.1
