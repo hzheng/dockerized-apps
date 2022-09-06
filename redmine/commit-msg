@@ -13,7 +13,9 @@ function info {
 }
 
 function error {
-  echo >&2 $1
+  RED='\033[0;31m'
+  NO_COLOR='\033[0m'
+  echo -e "${RED}$1${NC}" >&2
   exit 1
 }
 
@@ -54,6 +56,11 @@ else
   if [[ "$action" != "refs" ]]; then
     error "issue $issue_id is not a bug, use 'refs' instead of 'fixes' in comment"
   fi
+fi
+
+is_close=$(get_value "['issue']['status']['is_closed']" <<<"$issue")
+if [[ "$is_close" == "True" ]]; then
+  error "issue $issue_id is closed, please reopen it to commit"
 fi
 
 project=$(get_value "['issue']['project']['name']" <<<"$issue")
