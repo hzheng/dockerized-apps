@@ -19,7 +19,10 @@ function error {
   exit 1
 }
 
-subject_pattern="^(refs|fixes) \#[0-9]+\: [^ ]+"
+pattern_prefix='^(refs|fixes) #'
+subject_pattern="$pattern_prefix[0-9]+\: [^ ]+"
+match_pattern="$pattern_prefix([0-9]+).*"
+
 commit_subject=$(head -n 1 $1)
 if [[ ! "$commit_subject" =~ $subject_pattern ]]; then
   error "Commit subject(i.e. first line) should be in the form of \"[refs|fixes] #ID: message\""
@@ -30,23 +33,28 @@ function redmine_response {
 }
 
 function get_value {
-  python -c "import sys;import json;r=json.loads(sys.stdin.read());print str(r$1);"
+  attrs=
+  for attr in "$@"
+  do
+    attrs+="['$attr']"
+  done
+  python -c "import sys;import json;r=json.loads(sys.stdin.read());print str(r$attrs);"
 }
 
-issue_id=$(sed -E 's/(refs|fixes) #([0-9]+).*/\2/' <<<"$commit_subject")
+issue_id=$(sed -E "s/$match_pattern/\2/" <<<$commit_subject)
 debug "issue_id is $issue_id"
 
 redmine_host=$(git config redmine.host)
 redmine_apikey=$(git config redmine.apikey)
 issue=$(redmine_response "issues/$issue_id\.json")
 if [[ "$issue" == "" ]]; then
-  error "Issue $issue_id is not found"
+  error "Issue \"$issue_id\" is not found"
 fi
 debug "issue is <$issue>"
 
-action=$(sed -E 's/(refs|fixes) #([0-9]+).*/\1/' <<<"$commit_subject")
+action=$(sed -E "s/$match_pattern/\1/" <<<$commit_subject)
 debug "action is $action"
-tracker_id=$(get_value "['issue']['tracker']['id']" <<<"$issue")
+tracker_id=$(get_value issue tracker id <<<$issue)
 debug "tracker_id is $tracker_id"
 if [[ "$tracker_id" == "1" ]]; then # bug issue
   if [[ "$action" != "fixes" ]]; then
@@ -58,12 +66,12 @@ else
   fi
 fi
 
-is_close=$(get_value "['issue']['status']['is_closed']" <<<"$issue")
+is_close=$(get_value issue status is_closed <<<$issue)
 if [[ "$is_close" == "True" ]]; then
   error "issue $issue_id is closed, please reopen it to commit"
 fi
 
-project=$(get_value "['issue']['project']['name']" <<<"$issue")
+project=$(get_value issue project name <<<$issue)
 if [[ "$project" == "" ]]; then
   error "Project is not found"
 fi
@@ -81,20 +89,20 @@ if [[ "$user" == "" ]]; then
 fi
 
 debug "user is $user"
-user_id=$(get_value "['user']['id']" <<<"$user")
+user_id=$(get_value user id <<<$user)
 debug "user_id is $user_id"
-user_firstname=$(get_value "['user']['firstname']" <<<"$user")
-user_lastname=$(get_value "['user']['lastname']" <<<"$user")
+user_firstname=$(get_value user firstname <<<$user)
+user_lastname=$(get_value user lastname <<<$user)
 user_name="$user_firstname $user_lastname"
 debug "user is $user_name"
 
-assignee_id=$(get_value "['issue']['assigned_to']['id']" <<<"$issue")
+assignee_id=$(get_value issue assigned_to id <<<$issue)
 if [[ $assignee_id == "" ]]; then
   error "assignee is not found"
 fi
 debug "assignee_id is $assignee_id"
 
-assignee_name=$(echo $issue | get_value "['issue']['assigned_to']['name']")
+assignee_name=$(get_value issue assigned_to name <<<$issue)
 debug "assignee is $assignee_name"
 
 if [[ $user_id != $assignee_id ]]; then
@@ -105,11 +113,11 @@ debug "Assignee: OK"
 info ""
 info "=========================== Commit Summary ==========================="
 info "  Issue link:    $redmine_host/issues/$issue_id"
-info "  Issue #:       $(echo $issue | get_value "['issue']['id']")"
-info "  Issue Subject: $(echo $issue | get_value "['issue']['subject']")"
+info "  Issue #:       $issue_id"
+info "  Issue Subject: $(get_value issue subject <<<$issue)"
 info "  Project:       $project"
-info "  Priority:      $(echo $issue | get_value "['issue']['priority']['name']")"
-info "  Created by:    $(echo $issue | get_value "['issue']['author']['name']")"
+info "  Priority:      $(get_value issue priority name <<<$issue)"
+info "  Created by:    $(get_value issue author name <<<$issue)"
 info "  Assigned to:   $assignee_name"
 info ""
 
