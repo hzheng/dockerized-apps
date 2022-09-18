@@ -19,6 +19,10 @@ function error {
   exit 1
 }
 
+function tolower {
+    echo "$1" | tr '[:upper:]' '[:lower:]'
+}
+
 pattern_prefix='^(refs|fixes) #'
 subject_pattern="$pattern_prefix[0-9]+\: [^ ]+"
 match_pattern="$pattern_prefix([0-9]+).*"
@@ -38,7 +42,7 @@ function get_value {
   do
     attrs+="['$attr']"
   done
-  python -c "import sys;import json;r=json.loads(sys.stdin.read());print str(r$attrs);"
+  python3 -c "import sys;import json;r=json.loads(sys.stdin.read());print(str(r$attrs))"
 }
 
 issue_id=$(sed -E "s/$match_pattern/\2/" <<<$commit_subject)
@@ -79,7 +83,7 @@ debug "Project is $project"
 
 cur_dir=$(basename "$PWD")
 debug "current directory is $cur_dir"
-if [[ "$cur_dir" != "$project" ]]; then
+if [ "$(tolower $cur_dir)" != "$(tolower $project)" ]; then
   error "Project name \"$project\" doesn't match current directory($cur_dir)"
 fi
 
