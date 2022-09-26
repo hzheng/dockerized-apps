@@ -42,5 +42,5 @@ fi
 
 docker-compose rm -fs
 
-eval "$env docker-compose up --remove-orphan --build -d"
+eval "$env docker-compose up --remove-orphans --build -d"
 
