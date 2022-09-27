@@ -14,10 +14,12 @@ fi
 
 cd $dir
 
+newline='
+'
 read_val() {
     while true
     do
-        eval "\nread $2 -p \"input $1: \" val"
+        eval "read $2 -p \"input $1:$newline\" val"
         if [ -z "$val" ]; then
             echo "$1 cannot be empty" >&2
         else
