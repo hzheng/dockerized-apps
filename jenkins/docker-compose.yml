@@ -14,9 +14,12 @@ services:
       - '50000:50000'
     volumes:
       - jenkins_home:/var/jenkins_home
+    environment:
+      - TZ=America/New_York
 
   agent:
-    image: jenkins/ssh-agent:jdk11
+    build:
+      context: agent
     container_name: jenkins-agent
     restart: always
     hostname: agent
@@ -26,10 +29,13 @@ services:
       - 22
     volumes:
       - jenkins_home:/var/jenkins_home
+      - gitwork_home:/usr/src
+      - mongodb_bak:/data/mongodb_bak
     depends_on:
       - jenkins
     environment:
       - JENKINS_AGENT_SSH_PUBKEY=${JENKINS_AGENT_SSH_PUBKEY}
+      - TZ=America/New_York
 
 volumes:
   jenkins_home:
@@ -38,3 +44,15 @@ volumes:
       type: none
       o: bind
       device: /usr/local/storage/jenkins
+  mongodb_bak:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MONGODB_DATA}/backups
+  gitwork_home:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${GITWORK_HOME}
