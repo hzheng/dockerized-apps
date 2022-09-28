@@ -5,7 +5,7 @@ services:
      container_name: redmine_mysql
      hostname: redmine_mysql
      volumes:
-       - /usr/local/storage/redmine/mysql:/var/lib/mysql
+       - ${DOCKER_VOLUMES}/redmine/mysql:/var/lib/mysql
      environment:
        MYSQL_DATABASE: redmine
        MYSQL_USER: redmine
@@ -32,7 +32,7 @@ services:
        SMTP_ADDRESS: $SMTP_ADDRESS
 
      volumes:
-       - /usr/local/storage/redmine/plugins:/usr/src/redmine/plugins
-       - /usr/local/storage/redmine/public/themes:/usr/src/redmine/public/themes
-       - /usr/local/storage/redmine/files:/usr/src/redmine/files
-       - /usr/local/storage/redmine/repos:/var/lib/redmine/repos
+       - ${DOCKER_VOLUMES}/redmine/plugins:/usr/src/redmine/plugins
+       - ${DOCKER_VOLUMES}/redmine/public/themes:/usr/src/redmine/public/themes
+       - ${DOCKER_VOLUMES}/redmine/files:/usr/src/redmine/files
+       - ${DOCKER_VOLUMES}/redmine/repos:/var/lib/redmine/repos

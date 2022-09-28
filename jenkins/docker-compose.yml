@@ -20,7 +20,7 @@ services:
   agent:
     build:
       context: agent
-    container_name: jenkins-agent
+    container_name: jenkins_agent
     restart: always
     hostname: agent
     privileged: true
@@ -43,13 +43,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /usr/local/storage/jenkins
+      device: ${DOCKER_VOLUMES}/jenkins
   mongodb_bak:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${MONGODB_DATA}/backups
+      device: ${DATA_BAK}/mongodb
   gitwork_home:
     driver: local
     driver_opts:
