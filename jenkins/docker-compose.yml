@@ -30,7 +30,7 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - gitwork_home:/usr/src
-      - mongodb_bak:/data/mongodb_bak
+      - data_bak:/data/backups
     depends_on:
       - jenkins
     environment:
@@ -44,12 +44,12 @@ volumes:
       type: none
       o: bind
       device: ${DOCKER_VOLUMES}/jenkins
-  mongodb_bak:
+  data_bak:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${DATA_BAK}/mongodb
+      device: ${DATA_BAK}
   gitwork_home:
     driver: local
     driver_opts:
