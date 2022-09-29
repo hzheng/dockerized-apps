@@ -42,7 +42,7 @@ function main() {
     exit 1
   fi
 
-  rm -rf "${ARC_DIR}" "{$TMP_TAR_NAME}"
+  rm -rf "${ARC_DIR}" "${TMP_TAR_NAME}"
   for plugin in plugins jobs users secrets nodes; do
     mkdir -p "${ARC_DIR}/${plugin}"
   done
@@ -73,11 +73,10 @@ function main() {
   fi
 
   cd "${TMP_DIR}"
-  tar -czvf "${TMP_TAR_NAME}" "${ARC_NAME}/"*
+  tar zcfpv "${TMP_TAR_NAME}" "${ARC_NAME}/"*
   cd -
   mv -f "${TMP_TAR_NAME}" "${DEST_FILE}"
-
-  rm -rf "${ARC_DIR}"
+  # clean
   rm -rf "${TMP_DIR}"
   exit 0
 }
