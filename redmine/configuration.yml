@@ -3,7 +3,7 @@ production:
     #delivery_method: :sendmail
     delivery_method: :smtp
     smtp_settings:
-      address: "$SMTP_ADDRESS"
+      address: postfix
       port: 25
       domain: :none
       authentication: :none

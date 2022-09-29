@@ -22,7 +22,7 @@ services:
 
 networks:
   network:
-    name: postfix_bridge
+    name: postfix_network
     driver: bridge
     ipam:
       driver: default

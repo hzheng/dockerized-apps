@@ -6,6 +6,8 @@ services:
      hostname: redmine_mysql
      volumes:
        - ${DOCKER_VOLUMES}/redmine/mysql:/var/lib/mysql
+     networks:
+       - db_network
      environment:
        MYSQL_DATABASE: redmine
        MYSQL_USER: redmine
@@ -23,16 +25,23 @@ services:
      depends_on:
        - mysql
      restart: always
+     networks:
+       - postfix_network
+       - db_network
      ports:
        - 3000:3000
      environment:
        DB_ADAPTER: mysql2
        REDMINE_DB_MYSQL: mysql
        REDMINE_DB_PASSWORD: $DB_PASSWORD
-       SMTP_ADDRESS: $SMTP_ADDRESS
-
+       SMTP_ADDRESS: postfix
      volumes:
        - ${DOCKER_VOLUMES}/redmine/plugins:/usr/src/redmine/plugins
        - ${DOCKER_VOLUMES}/redmine/public/themes:/usr/src/redmine/public/themes
        - ${DOCKER_VOLUMES}/redmine/files:/usr/src/redmine/files
        - ${DOCKER_VOLUMES}/redmine/repos:/var/lib/redmine/repos
+
+networks:
+  postfix_network:
+    external: true
+  db_network:
