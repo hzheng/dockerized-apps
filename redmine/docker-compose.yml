@@ -45,3 +45,10 @@ networks:
   postfix_network:
     external: true
   db_network:
+    name: redmine_db_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${DB_SUBNET_PREFIX}.0/24
+          gateway: ${DB_SUBNET_PREFIX}.1
