@@ -5,7 +5,7 @@ services:
      container_name: redmine_mysql
      hostname: redmine_mysql
      volumes:
-       - ${DOCKER_VOLUMES}/redmine/mysql:/var/lib/mysql
+       - redmine_mysql_home:/var/lib/mysql
      networks:
        - db_network
      environment:
@@ -36,10 +36,8 @@ services:
        REDMINE_DB_PASSWORD: $DB_PASSWORD
        SMTP_ADDRESS: postfix
      volumes:
-       - ${DOCKER_VOLUMES}/redmine/plugins:/usr/src/redmine/plugins
-       - ${DOCKER_VOLUMES}/redmine/public/themes:/usr/src/redmine/public/themes
-       - ${DOCKER_VOLUMES}/redmine/files:/usr/src/redmine/files
-       - ${DOCKER_VOLUMES}/redmine/repos:/var/lib/redmine/repos
+       - redmine_home:/data
+       - redmine_gitroot:/var/lib/redmine/repos
 
 networks:
   postfix_network:
@@ -52,3 +50,26 @@ networks:
       config:
         - subnet: ${DB_SUBNET_PREFIX}.0/24
           gateway: ${DB_SUBNET_PREFIX}.1
+
+volumes:
+  redmine_home:
+    name: redmine_home
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DOCKER_VOLUMES}/redmine
+  redmine_mysql_home:
+    name: redmine_mysql_home
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DOCKER_VOLUMES}/redmine/mysql
+  redmine_gitroot:
+    name: redmine_gitroot
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DOCKER_VOLUMES}/redmine/gitroot

@@ -36,7 +36,7 @@ services:
       - 22
     volumes:
       - jenkins_home:/var/jenkins_home
-      - gitwork_home:/usr/src
+      - src_home:/usr/src
       - data_bak:/data/backups
     depends_on:
       - jenkins
@@ -46,18 +46,21 @@ services:
 
 volumes:
   jenkins_home:
+    name: jenkins_home
     driver: local
     driver_opts:
       type: none
       o: bind
       device: ${DOCKER_VOLUMES}/jenkins
   data_bak:
+    name: jenkins_data_bak
     driver: local
     driver_opts:
       type: none
       o: bind
       device: ${DATA_BAK}
-  gitwork_home:
+  src_home:
+    name: jenkins_src_home
     driver: local
     driver_opts:
       type: none

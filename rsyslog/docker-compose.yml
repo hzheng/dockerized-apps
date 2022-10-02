@@ -9,9 +9,20 @@ services:
     hostname: rsyslog 
     restart: always
     volumes: 
-      - "/var/log:/var/log" 
+      - rsyslog_home:/var/log
     ports: 
       - 514:514
       - 514:514/udp
     cap_add:
       - SYSLOG
+    environment:
+      - TZ=America/New_York
+
+volumes:
+  rsyslog_home:
+    name: rsyslog_home
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DOCKER_VOLUMES}/rsyslog

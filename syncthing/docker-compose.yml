@@ -21,6 +21,7 @@ services:
 
 volumes:
   syncthing_home:
+    name: syncthing_home
     driver: local
     driver_opts:
       type: none

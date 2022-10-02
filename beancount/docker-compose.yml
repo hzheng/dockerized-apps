@@ -8,7 +8,16 @@ services:
     container_name: beancount
     hostname: fava
     volumes:
-       - $BEAN_DIR:/bean
+       - bean_home:/bean
     restart: always
     ports:
        - "5555:5000"
+
+volumes:
+  bean_home:
+    name: bean_home
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${BEAN_DIR}
