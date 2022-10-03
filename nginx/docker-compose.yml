@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  nginx:
+    build:
+      context: .
+    image: nginx:custom
+    container_name: nginx
+    hostname: nginx
+    networks:
+      - nginx_network
+      - jenkins_network
+      - syncthing_network
+      - redmine_network
+      - fava_network
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '444:443'
+    # volumes:
+    #   - nginx_home:/var/www/html
+    environment:
+      - TZ=America/New_York
+
+# volumes:
+#   nginx_home:
+#     name: nginx_home
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ${DOCKER_VOLUMES}/nginx
+
+networks:
+  nginx_network:
+    name: nginx_network
+  jenkins_network:
+    external: true
+  syncthing_network:
+    external: true
+  redmine_network:
+    external: true
+  fava_network:
+    external: true

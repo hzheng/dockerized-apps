@@ -30,7 +30,7 @@ services:
     networks:
       - jenkins_network
       - postfix_network
-      - redmine_db_network
+      - redmine_network
       - smartrade_mongodb
     expose:
       - 22
@@ -72,7 +72,7 @@ networks:
     name: jenkins_network
   postfix_network:
     external: true
-  redmine_db_network:
+  redmine_network:
     external: true
   smartrade_mongodb:
     external: true

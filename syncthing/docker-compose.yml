@@ -6,18 +6,24 @@ services:
     image: syncthing/syncthing
     container_name: syncthing
     hostname: syncthing
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/New_York
-    volumes:
-      - syncthing_home:/var/syncthing
+    networks:
+      - syncthing_network
     ports:
       - 8384:8384 # Web UI
       - 22000:22000/tcp # TCP file transfers
       - 22000:22000/udp # QUIC file transfers
       - 21027:21027/udp # Receive local discovery broadcasts
+    volumes:
+      - syncthing_home:/var/syncthing
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
     restart: unless-stopped
+
+networks:
+  syncthing_network:
+    name: syncthing_network
 
 volumes:
   syncthing_home:

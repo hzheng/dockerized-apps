@@ -4,10 +4,10 @@ services:
      image: mysql:5.7
      container_name: redmine_mysql
      hostname: redmine_mysql
+     networks:
+       - redmine_network
      volumes:
        - redmine_mysql_home:/var/lib/mysql
-     networks:
-       - db_network
      environment:
        MYSQL_DATABASE: redmine
        MYSQL_USER: redmine
@@ -26,8 +26,8 @@ services:
        - mysql
      restart: always
      networks:
+       - redmine_network
        - postfix_network
-       - db_network
      ports:
        - 3000:3000
      environment:
@@ -40,16 +40,16 @@ services:
        - redmine_gitroot:/var/lib/redmine/repos
 
 networks:
-  postfix_network:
-    external: true
-  db_network:
-    name: redmine_db_network
+  redmine_network:
+    name: redmine_network
     driver: bridge
     ipam:
       driver: default
       config:
         - subnet: ${DB_SUBNET_PREFIX}.0/24
           gateway: ${DB_SUBNET_PREFIX}.1
+  postfix_network:
+    external: true
 
 volumes:
   redmine_home:

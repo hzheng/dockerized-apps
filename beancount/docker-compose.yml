@@ -10,6 +10,8 @@ services:
     volumes:
        - bean_home:/bean
     restart: always
+    networks:
+      - fava_network
     ports:
        - "5555:5000"
 
@@ -21,3 +23,7 @@ volumes:
       type: none
       o: bind
       device: ${BEAN_DIR}
+
+networks:
+  fava_network:
+    name: fava_network
