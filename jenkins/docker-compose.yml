@@ -31,7 +31,6 @@ services:
       - jenkins_network
       - postfix_network
       - redmine_network
-      - smartrade_mongodb
     expose:
       - 22
     volumes:
@@ -73,6 +72,4 @@ networks:
   postfix_network:
     external: true
   redmine_network:
-    external: true
-  smartrade_mongodb:
     external: true
