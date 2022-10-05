@@ -1,13 +1,9 @@
-FROM ubuntu:20.04
+FROM alpine:3.14
 
-RUN apt update && apt install rsyslog -y
+RUN apk update
 
-RUN echo '$ModLoad imudp \n\
-$UDPServerRun 514 \n\
-$ModLoad imtcp \n\
-$InputTCPServerRun 514 \n\
-$template RemoteStore, "/var/log/remote/%$year%/%$Month%/%$Day%/%$Hour%.log" \n\
-:source, !isequal, "localhost" -?RemoteStore \n\
-:source, isequal, "last" ~ ' > /etc/rsyslog.conf
+RUN apk add --no-cache rsyslog
+
+COPY rsyslog.conf /etc/
 
 ENTRYPOINT ["rsyslogd", "-n"]

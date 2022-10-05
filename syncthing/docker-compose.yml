@@ -9,16 +9,22 @@ services:
     networks:
       - syncthing_network
     ports:
-      - 8384:8384 # Web UI
-      - 22000:22000/tcp # TCP file transfers
-      - 22000:22000/udp # QUIC file transfers
-      - 21027:21027/udp # Receive local discovery broadcasts
+      - ${SYNCTHING_PORT_WEB}:8384 # Web UI
+      - ${SYNCTHING_PORT_TCP}:22000/tcp # TCP file transfers
+      - ${SYNCTHING_PORT_QUIC}:22000/udp # QUIC file transfers
+      - ${SYNCTHING_PORT_DISCOVERY}:21027/udp # Receive local discovery broadcasts
     volumes:
       - syncthing_home:/var/syncthing
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/New_York
+      - TZ=${TIME_ZONE}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${RSYSLOG_SUBNET_PREFIX}.1:${RSYSLOG_PORT}"
+        syslog-format: "${RSYSLOG_FORMAT}"
+        tag: "{{.Name}}/{{.ID}}"
     restart: unless-stopped
 
 networks:

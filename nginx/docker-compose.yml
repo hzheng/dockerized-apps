@@ -15,12 +15,18 @@ services:
       - fava_network
     restart: unless-stopped
     ports:
-      - '80:80'
-      - '444:443'
+      - "${NGINX_PORT}:80"
+      - "${NGINX_PORT2}:443"
     # volumes:
     #   - nginx_home:/var/www/html
     environment:
-      - TZ=America/New_York
+      - TZ=${TIME_ZONE}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${RSYSLOG_SUBNET_PREFIX}.1:${RSYSLOG_PORT}"
+        syslog-format: "${RSYSLOG_FORMAT}"
+        tag: "{{.Name}}/{{.ID}}"
 
 # volumes:
 #   nginx_home:

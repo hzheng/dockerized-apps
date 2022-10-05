@@ -1,43 +1,48 @@
 version: '3.9'
 services:
-   mysql:
-     image: mysql:5.7
-     container_name: redmine_mysql
-     hostname: redmine_mysql
-     networks:
-       - redmine_network
-     volumes:
-       - redmine_mysql_home:/var/lib/mysql
-     environment:
-       MYSQL_DATABASE: redmine
-       MYSQL_USER: redmine
-       MYSQL_PASSWORD: $DB_PASSWORD
-       MYSQL_ROOT_PASSWORD: $DB_PASSWORD
-     env_file:
-       - .env
-     restart: always
-   redmine:
-     build:
-       context: .
-     image: redmine:custom
-     container_name: redmine
-     hostname: redmine
-     depends_on:
-       - mysql
-     restart: always
-     networks:
-       - redmine_network
-       - postfix_network
-     ports:
-       - 3000:3000
-     environment:
-       DB_ADAPTER: mysql2
-       REDMINE_DB_MYSQL: mysql
-       REDMINE_DB_PASSWORD: $DB_PASSWORD
-       SMTP_ADDRESS: postfix
-     volumes:
-       - redmine_home:/data
-       - redmine_gitroot:/var/lib/redmine/repos
+  mysql:
+    image: mysql:5.7
+    container_name: redmine_mysql
+    hostname: redmine_mysql
+    networks:
+      - redmine_network
+    volumes:
+      - redmine_mysql_home:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: redmine
+      MYSQL_USER: redmine
+      MYSQL_PASSWORD: $DB_PASSWORD
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+    restart: always
+  redmine:
+    build:
+      context: .
+    image: redmine:custom
+    container_name: redmine
+    hostname: redmine
+    depends_on:
+      - mysql
+    restart: always
+    networks:
+      - redmine_network
+      - postfix_network
+    ports:
+      - ${REDMINE_PORT}:3000
+    environment:
+      - DB_ADAPTER=mysql2
+      - REDMINE_DB_MYSQL=mysql
+      - REDMINE_DB_PASSWORD=$DB_PASSWORD
+      - SMTP_ADDRESS=postfix
+      - TZ=${TIME_ZONE}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${RSYSLOG_SUBNET_PREFIX}.1:${RSYSLOG_PORT}"
+        syslog-format: "${RSYSLOG_FORMAT}"
+        tag: "{{.Name}}/{{.ID}}"
+    volumes:
+      - redmine_home:/data
+      - redmine_gitroot:/var/lib/redmine/repos
 
 networks:
   redmine_network:
@@ -46,8 +51,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: ${DB_SUBNET_PREFIX}.0/24
-          gateway: ${DB_SUBNET_PREFIX}.1
+        - subnet: ${REDMINE_SUBNET_PREFIX}.0/24
+          gateway: ${REDMINE_SUBNET_PREFIX}.1
   postfix_network:
     external: true
 

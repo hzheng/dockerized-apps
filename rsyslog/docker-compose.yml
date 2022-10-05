@@ -10,13 +10,25 @@ services:
     restart: always
     volumes: 
       - rsyslog_home:/var/log
+    networks:
+      - rsyslog_network
     ports: 
-      - 514:514
-      - 514:514/udp
+      - ${RSYSLOG_PORT}:514
+      - ${RSYSLOG_PORT}:514/udp
     cap_add:
       - SYSLOG
     environment:
-      - TZ=America/New_York
+      - TZ=${TIME_ZONE}
+
+networks:
+  rsyslog_network:
+    name: rsyslog_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${RSYSLOG_SUBNET_PREFIX}.0/24
+          gateway: ${RSYSLOG_SUBNET_PREFIX}.1
 
 volumes:
   rsyslog_home:

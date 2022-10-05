@@ -10,13 +10,20 @@ services:
     container_name: postfix
     hostname: postfix
     restart: always
+    env_file:
+      - .env
     environment:
       - SMTP_USERNAME=$SMTP_USERNAME
       - SMTP_PASSWORD=$SMTP_PASSWORD
-    env_file:
-      - .env
+      - TZ=${TIME_ZONE}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${RSYSLOG_SUBNET_PREFIX}.1:${RSYSLOG_PORT}"
+        syslog-format: "${RSYSLOG_FORMAT}"
+        tag: "{{.Name}}/{{.ID}}"
     ports:
-       - "25:25"
+       - "${POSTFIX_PORT}:25"
     cap_add:
       - SYSLOG
 
@@ -27,5 +34,5 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: ${SUBNET_PREFIX}.0/24
-          gateway: ${SUBNET_PREFIX}.1
+        - subnet: ${POSTFIX_SUBNET_PREFIX}.0/24
+          gateway: ${POSTFIX_SUBNET_PREFIX}.1

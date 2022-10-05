@@ -13,7 +13,15 @@ services:
     networks:
       - fava_network
     ports:
-       - "5555:5000"
+       - "${FAVA_PORT}:5000"
+    environment:
+      - TZ=${TIME_ZONE}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${RSYSLOG_SUBNET_PREFIX}.1:${RSYSLOG_PORT}"
+        syslog-format: "${RSYSLOG_FORMAT}"
+        tag: "{{.Name}}/{{.ID}}"
 
 volumes:
   bean_home:

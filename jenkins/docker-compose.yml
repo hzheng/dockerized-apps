@@ -11,13 +11,20 @@ services:
     user: root
     networks:
       - jenkins_network
+      - rsyslog_network
     ports:
-      - '8080:8080'
-      - '50000:50000'
+      - "${JENKINS_PORT}:8080"
+      - "${JENKINS_PORT2}:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
     environment:
-      - TZ=America/New_York
+      - TZ=${TIME_ZONE}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${RSYSLOG_SUBNET_PREFIX}.1:${RSYSLOG_PORT}"
+        syslog-format: "${RSYSLOG_FORMAT}"
+        tag: "{{.Name}}/{{.ID}}"
 
   agent:
     build:
@@ -29,6 +36,7 @@ services:
     user: root
     networks:
       - jenkins_network
+      - rsyslog_network
       - postfix_network
       - redmine_network
     expose:
@@ -41,7 +49,13 @@ services:
       - jenkins
     environment:
       - JENKINS_AGENT_SSH_PUBKEY=${JENKINS_AGENT_SSH_PUBKEY}
-      - TZ=America/New_York
+      - TZ=${TIME_ZONE}
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://${RSYSLOG_SUBNET_PREFIX}.1:${RSYSLOG_PORT}"
+        syslog-format: "${RSYSLOG_FORMAT}"
+        tag: "{{.Name}}/{{.ID}}"
 
 volumes:
   jenkins_home:
@@ -69,6 +83,8 @@ volumes:
 networks:
   jenkins_network:
     name: jenkins_network
+  rsyslog_network:
+    external: true
   postfix_network:
     external: true
   redmine_network:
