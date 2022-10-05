@@ -5,7 +5,8 @@ services:
     build:
       context: .
     networks:
-      - network
+      - postfix_network
+      - rsyslog_network
     image: postfix:custom
     container_name: postfix
     hostname: postfix
@@ -28,7 +29,7 @@ services:
       - SYSLOG
 
 networks:
-  network:
+  postfix_network:
     name: postfix_network
     driver: bridge
     ipam:
@@ -36,3 +37,5 @@ networks:
       config:
         - subnet: ${POSTFIX_SUBNET_PREFIX}.0/24
           gateway: ${POSTFIX_SUBNET_PREFIX}.1
+  rsyslog_network:
+    external: true
