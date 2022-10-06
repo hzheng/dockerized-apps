@@ -15,7 +15,7 @@ RUN chmod +x ${BAZEL_INSTALL_SH}
 RUN ./${BAZEL_INSTALL_SH} && rm -f ${BAZEL_INSTALL_SH}
 
 # install other utilities
-# RUN apt-get install -y rsyslog
+RUN apt-get install -y tree
 
 # run forever
 CMD tail -f /dev/null
