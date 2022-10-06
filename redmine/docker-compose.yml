@@ -41,7 +41,9 @@ services:
         syslog-format: "${RSYSLOG_FORMAT}"
         tag: "{{.Name}}/{{.ID}}"
     volumes:
-      - redmine_home:/data
+      - redmine_plugins:/usr/src/redmine/plugins
+      - redmine_themes:/usr/src/redmine/public/themes
+      - redmine_files:/usr/src/redmine/files
       - redmine_gitroot:/var/lib/redmine/repos
 
 networks:
@@ -57,13 +59,27 @@ networks:
     external: true
 
 volumes:
-  redmine_home:
-    name: redmine_home
+  redmine_plugins:
+    name: redmine_plugins
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${DOCKER_VOLUMES}/redmine
+      device: ${DOCKER_VOLUMES}/redmine/plugins
+  redmine_themes:
+    name: redmine_themes
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DOCKER_VOLUMES}/redmine/public/themes
+  redmine_files:
+    name: redmine_files
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DOCKER_VOLUMES}/redmine/files
   redmine_mysql_home:
     name: redmine_mysql_home
     driver: local
