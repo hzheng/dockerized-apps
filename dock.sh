@@ -30,6 +30,17 @@ read_val() {
 }
 
 env=
+dirname=${PWD##*/}
+env_file=${DOCKER_VOLUMES}/$dirname/.env
+if [ -f $env_file ]; then
+    while IFS='=' read -r key val
+    do
+        if [[ $key != \#* ]]; then # ignore those values starting with #
+            key=$(echo $key | tr '.' '_')
+            env+="${key%% *}=$val "
+        fi
+    done < "$env_file"
+fi
 if [ -f prompt_env_vars ]; then
     vars=()
     while IFS= read -r line; do
