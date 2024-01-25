@@ -27,7 +27,7 @@ usage() {
 
 HOST=redmine_mysql
 PORT=3306
-while getopts ":d:hH:i:" opt; do
+while getopts ":hH:p:" opt; do
     case $opt in
         h)
             usage 0
