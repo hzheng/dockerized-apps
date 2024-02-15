@@ -44,6 +44,7 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - src_home:/usr/src
+      - data_apps:/data/apps
       - data_bak:/data/backups
     depends_on:
       - jenkins
@@ -65,6 +66,13 @@ volumes:
       type: none
       o: bind
       device: ${DOCKER_VOLUMES}/jenkins
+  data_apps:
+    name: jenkins_data_apps
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DOCKER_VOLUMES}
   data_bak:
     name: jenkins_data_bak
     driver: local
