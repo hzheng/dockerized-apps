@@ -11,7 +11,7 @@ services:
       - postfix_network
     ports:
       - "${GITEA_HTTP_PORT}:3000"
-      - "${GITEA_SSH_PORT}:22"
+      - "${GITEA_SSH_PORT}:2222"
     volumes:
       - gitea_data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -25,6 +25,7 @@ services:
       - GITEA__server__SSH_DOMAIN=${GITEA_DOMAIN}
       - GITEA__server__ROOT_URL=http://${GITEA_DOMAIN}:${GITEA_HTTP_PORT}/
       - GITEA__server__SSH_PORT=${GITEA_SSH_PORT}
+      - GITEA__server__SSH_LISTEN_PORT=${GITEA_SSH_PORT}
       - GITEA__server__DISABLE_SSH=false
       - GITEA__server__START_SSH_SERVER=true
       - GITEA__mailer__ENABLED=true

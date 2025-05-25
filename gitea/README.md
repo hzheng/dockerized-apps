@@ -10,7 +10,7 @@ This directory contains the Docker Compose configuration for running Gitea as a 
 
 1. Configure environment variables in the main `.env` file (already set with sensible defaults):
    - `GITEA_HTTP_PORT=3001`: Port for Gitea web interface
-   - `GITEA_SSH_PORT=2222`: Port for Git SSH access
+   - `GITEA_SSH_PORT=2222`: Port for Git SSH access (uses 2222 to avoid conflicts)
    - `GITEA_DOMAIN=localhost`: Domain name or IP address
    - `GITEA_ADMIN_EMAIL=admin@localhost`: Email address for admin notifications
    - `GITEA_DISABLE_REGISTRATION=true`: Disable new user registration
@@ -28,6 +28,7 @@ After starting the services:
 
 - **Web Interface**: `http://localhost:3001` (or your configured domain/port)
 - **Git SSH**: Use port `2222` for Git operations over SSH
+- **Git HTTPS**: Also available via the web interface port
 
 ## First Run
 
@@ -43,7 +44,8 @@ After starting the services:
 - Pull/merge requests
 - Wiki support
 - Email notifications via postfix
-- SSH access for Git operations
+- SSH access for Git operations (port 2222)
+- HTTPS access for Git operations
 - SQLite database (perfect for personal use)
 
 ## Data Persistence
@@ -70,6 +72,33 @@ For personal Git hosting, SQLite is an excellent choice because:
 - ✅ Excellent performance for small to medium workloads
 - ✅ Built into Gitea - no additional dependencies
 - ✅ Perfect for single-user or small team scenarios
+
+## Git Operations
+
+You can use either SSH or HTTPS for Git operations:
+
+### SSH (Recommended)
+```bash
+# Clone a repository
+git clone ssh://git@localhost:2222/username/repository.git
+
+# Add remote
+git remote add origin ssh://git@localhost:2222/username/repository.git
+```
+
+### HTTPS
+```bash
+# Clone a repository
+git clone http://localhost:3001/username/repository.git
+
+# Add remote
+git remote add origin http://localhost:3001/username/repository.git
+```
+
+## Port Configuration
+
+- **SSH Port 2222**: Used instead of standard port 22 to avoid conflicts
+- **HTTP Port 3001**: Different from Redmine's 3000 to avoid conflicts
 
 ## Customization
 
